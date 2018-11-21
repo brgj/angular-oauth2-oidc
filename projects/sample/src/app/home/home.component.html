@@ -9,6 +9,7 @@
             <label><input type="checkbox" [(ngModel)]="requestAccessToken"> Request AccessToken</label>
         </div>
         <button class="btn btn-default" (click)="login()">Login</button>
+        <button class="btn btn-default" (click)="authCodeLogin()">Auth Code Login</button>
         <button class="btn btn-default" (click)="logout()">Logout</button>
 
         <button class="btn btn-default" *ngIf="access_token" (click)="loadUserProfile()">Load User Profile</button>

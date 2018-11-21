@@ -32,6 +32,10 @@ export class HomeComponent implements OnInit {
     // the parameter here is optional. It's passed around and can be used after logging in
   }
 
+  authCodeLogin() {
+    this.oauthService.initAuthorizationCodeFlow();
+  }
+
   logout() {
     this.oauthService.logOut();
   }

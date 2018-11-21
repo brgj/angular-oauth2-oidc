@@ -706,6 +706,7 @@ export class OAuthService extends AuthConfig {
       let params = new HttpParams()
         .set('grant_type', 'authorization_code')
         .set('code', code)
+        .set('client_secret', 'secret')
         .set('redirect_uri', this.redirectUri);
       return this.fetchToken(params);
     }
