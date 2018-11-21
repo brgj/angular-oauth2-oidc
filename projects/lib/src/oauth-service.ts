@@ -80,6 +80,7 @@ export class OAuthService extends AuthConfig {
     private sessionCheckTimer: any;
     private silentRefreshSubject: string;
     private inImplicitFlow = false;
+    private pkceFlow = true;
 
     constructor(
         private ngZone: NgZone,
@@ -706,8 +707,10 @@ export class OAuthService extends AuthConfig {
       let params = new HttpParams()
         .set('grant_type', 'authorization_code')
         .set('code', code)
-        .set('client_secret', 'secret')
-        .set('redirect_uri', this.redirectUri);
+        .set('client_id', 'client')
+        // .set('client_secret', 'secret')
+        .set('redirect_uri', this.redirectUri)
+        .set('code_verifier', 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk');
       return this.fetchToken(params);
     }
 
@@ -732,6 +735,10 @@ export class OAuthService extends AuthConfig {
                   'Content-Type',
                   'application/x-www-form-urlencoded'
               );
+
+        // if (this.pkceFlow) {
+        //     this.tokenEndpoint = this.tokenEndpoint + '?code_verifier=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk';
+        // }
 
         this.http.post<TokenResponse>(this.tokenEndpoint, params, { headers }).subscribe(
           (tokenResponse) => {
@@ -1146,6 +1153,10 @@ export class OAuthService extends AuthConfig {
 
             if (noPrompt) {
                 url += '&prompt=none';
+            }
+
+            if (this.pkceFlow) {
+                url += '&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256';
             }
 
             for (const key of Object.keys(params)) {
