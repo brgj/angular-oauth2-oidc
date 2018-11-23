@@ -1101,12 +1101,17 @@ export class OAuthService extends AuthConfig {
 
         let nonce = null;
         if (!this.disableNonceCheck) {
-          let nonce = this.createAndSaveNonce();
+          nonce = this.createAndSaveNonce();
           if (state) {
             state = nonce + this.config.nonceStateSeparator + state;
           } else {
             state = nonce;
           }
+
+          console.log("disableNonceCheck state: " + state);
+
+        } else {
+            console.log("disableNonceCheck: " + this.disableNonceCheck);
         }
 
         if (!this.requestAccessToken && !this.oidc) {
@@ -1252,7 +1257,7 @@ export class OAuthService extends AuthConfig {
         throw new Error('loginUrl must use Http. Also check property requireHttps.');
       }
 
-      this.createLoginUrl('', '', null, false, {}).then(function (url) {
+      this.createLoginUrl(this.createAndSaveState(), '', null, false, {}).then(function (url) {
         location.href = url;
       })
         .catch(error => {
@@ -1555,6 +1560,8 @@ export class OAuthService extends AuthConfig {
                 return Promise.reject(err);
             }
         }
+
+        console.log("Process Id Token, nonceSaved: " + savedNonce, claims);
 
         /*
             if (this.getKeyCount() > 1 && !header.kid) {
@@ -1900,6 +1907,16 @@ export class OAuthService extends AuthConfig {
 
         return text;
         }
+    };
+
+    public createAndSaveState(): string {
+        let state = "";
+        let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+        for (let i = 0; i < 12; i++)
+            state += possible.charAt(Math.floor(Math.random() * possible.length));
+        this._storage.setItem('state', state);
+        return state;
     };
 
     private checkAtHash(params: ValidationParams): boolean {

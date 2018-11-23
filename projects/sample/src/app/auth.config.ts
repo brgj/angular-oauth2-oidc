@@ -13,6 +13,8 @@ export const authConfig: AuthConfig = {
   // URL of the SPA to redirect the user after silent refresh
   silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
 
+  postLogoutRedirectUri: window.location.origin + '/index.html',
+
   // The SPA's id. The SPA is registerd with this id at the auth-server
   // clientId: 'spa-demo',
   clientId: 'client',
@@ -24,5 +26,9 @@ export const authConfig: AuthConfig = {
 
   showDebugInformation: true,
 
-  sessionChecksEnabled: false
+  sessionChecksEnabled: false,
+
+  disableAtHashCheck: true,
+
+  oidc: true
 };
