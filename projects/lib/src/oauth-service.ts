@@ -25,6 +25,7 @@ import {
 import { b64DecodeUnicode } from './base64-helper';
 import { AuthConfig } from './auth.config';
 import { WebHttpUrlEncodingCodec } from './encoder';
+import { sha256 } from 'js-sha256';
 
 /**
  * Service for logging in and logging out with
@@ -710,8 +711,30 @@ export class OAuthService extends AuthConfig {
         .set('client_id', 'client')
         // .set('client_secret', 'secret')
         .set('redirect_uri', this.redirectUri)
-        .set('code_verifier', 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk');
+        .set('code_verifier', localStorage.getItem("verifier"));
       return this.fetchToken(params);
+    }
+
+    private getValues() {
+        var arr:number[];
+        arr = [116, 24, 223, 180, 151, 153, 224, 37, 79, 250, 96, 125, 216, 173, 187, 186, 22, 212, 37, 77, 105, 214, 191, 240, 91, 88, 5, 88, 83, 132, 141, 121];
+        return arr;
+    }
+
+    private bufferToBase64(buf) {
+        return btoa(Array.prototype.map.call(buf, function (ch) {
+            return String.fromCharCode(ch);
+        }).join(''));
+    }
+
+    private hexToBase64(hex) {
+        return btoa(hex.match(/\w{2}/g).map(function(a) {
+            return String.fromCharCode(parseInt(a, 16));
+        }).join(""));
+    }
+
+    private base64ToBase64Url(b64) {
+        return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
     private fetchToken(params: HttpParams): Promise<object> {
@@ -1161,7 +1184,8 @@ export class OAuthService extends AuthConfig {
             }
 
             if (this.pkceFlow) {
-                url += '&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256';
+                url += '&code_challenge=' + this.startPkceFlow();
+                url += '&code_challenge_method=S256';
             }
 
             for (const key of Object.keys(params)) {
@@ -1179,6 +1203,27 @@ export class OAuthService extends AuthConfig {
         return Promise.resolve(url);
 
     };
+
+    private startPkceFlow(): string {
+        localStorage.removeItem("verifier");
+        var arr = new Uint8Array(32);
+        // var arr = new Uint8Array(this.getValues());
+        
+        arr = window.crypto.getRandomValues(arr);
+        console.log("randomValues=" + arr);
+
+        let ver = this.base64ToBase64Url(this.bufferToBase64(arr));
+        console.log("verifier=" + ver);
+        console.log("sha256 of verifier=" + sha256(ver));
+        // ver = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
+
+        let challenge = this.base64ToBase64Url(this.hexToBase64(sha256(ver)));
+        console.log("challenge=" + challenge);
+        // this.challenge = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM";
+
+        localStorage.setItem("verifier", ver);
+        return challenge;
+    }
 
     initImplicitFlowInternal(
         additionalState = '',
