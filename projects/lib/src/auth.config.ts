@@ -24,7 +24,7 @@ export class AuthConfig {
   /**
    * The requested scopes
    */
-  public scope? = 'openid profile';
+  public scope? = 'openid profile offline_access';
 
   public resource? = '';
 

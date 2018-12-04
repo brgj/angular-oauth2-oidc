@@ -6,7 +6,7 @@ export const noDiscoveryAuthConfig: AuthConfig = {
   redirectUri: 'http://localhost:4200/index.html',
   postLogoutRedirectUri: '',
   loginUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
-  scope: 'openid profile email',
+  scope: 'openid profile email offline_access',
   resource: '',
   rngUrl: '',
   oidc: true,

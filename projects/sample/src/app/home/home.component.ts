@@ -70,6 +70,20 @@ export class HomeComponent implements OnInit {
       .catch(err => console.error('refresh error', err));
   }
 
+  requestAccessTokenWithRefreshToken() {
+    /*
+         * Tweak config for implicit flow.
+         * This is needed b/c this sample uses both flows
+        */
+    //this.oauthService.clientId = "spa-demo";
+    this.oauthService.oidc = true;
+
+    this.oauthService
+      .refreshToken()
+      .then(info => console.debug('refresh token ok', info))
+      .catch(err => console.error('refresh token error', err));
+  }
+
   set requestAccessToken(value: boolean) {
     this.oauthService.requestAccessToken = value;
     localStorage.setItem('requestAccessToken', '' + value);
@@ -85,6 +99,10 @@ export class HomeComponent implements OnInit {
 
   get access_token() {
     return this.oauthService.getAccessToken();
+  }
+
+  get refresh_token() {
+    return this.oauthService.getRefreshToken();
   }
 
   get id_token_expiration() {

@@ -41,6 +41,9 @@
     <p>
         <b>id_token:</b> {{id_token}}
     </p>
+    <p>
+        <b>refresh_token:</b> {{refresh_token}}
+    </p>
     <div *ngIf="userProfile">
         <b>user profile:</b>
         <pre>{{userProfile | json}}</pre>
@@ -50,3 +53,4 @@
 </div>
 
 <button class="btn btn-default" (click)="testSilentRefresh()">Test silent refresh</button>
+<button class="btn btn-default" (click)="requestAccessTokenWithRefreshToken()">Refresh using refresh token</button>
